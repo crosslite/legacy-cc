@@ -1,1 +1,10 @@
 legacy-cc
+---------
+
+Compiler for K&R C. Uses the C23 standard.
+
+сс  - driver
+cpp - preprocessor
+c0  - passage 1
+c1  - passage 2
+c2  - passage 3
