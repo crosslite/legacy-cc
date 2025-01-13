@@ -13,10 +13,18 @@
 
 #define ASSERT(x, s) if (x) fatal(s);
 
-#define OPTIONS \
-        OPTION(help,    0) \
-        OPTION(o,       1)
-#define OPTCOUNT 2
+#define ARRAY_ASSIGN(type, arr, ...)                    \
+        {                                               \
+                type temp[] = { __VA_ARGS__ };          \
+                memcpy(arr, temp, sizeof(temp));        \
+        }
+
+#define OPTIONS                 \
+        OPTION(help,    0)      \
+        OPTION(o,       1)      \
+        OPTION(S,       2)      \
+        OPTION(E,       3)
+#define OPTCOUNT 4
 
 extern int      getopt(const char *);
 extern char     *_(const char *, ...);
@@ -25,12 +33,11 @@ extern void     error(const char *);
 extern int      getsuf(char *);
 extern char     *setsuf(char *, char);
 extern int      callsys(char *, char **);
-extern char     **build_argv(int, ...);
 
 extern char     *outfile;
 extern char     *clist[MAXFIL];
 extern char     *filename;
-extern char     **av;
+extern char     *av[50];
 extern int      exflag;
 extern int      cflag;
 extern int      eflag;

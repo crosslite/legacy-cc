@@ -3,6 +3,9 @@ CFLAGS = -std=c2x -ggdb
 all: cc c0 c1
 	@ echo 'done'
 
+test: test.c
+	gcc $(CFLAGS) test.c -o test
+
 cc: cc.c cc.h
 	gcc $(CFLAGS) -o cc cc.c
 

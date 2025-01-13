@@ -27,6 +27,13 @@ main(int argc, char **argv)
                         if ((c=getsuf(outfile))=='c' || c=='o')
                                 fatal(_("would overwrite %s", outfile));
                         break;
+                case __S:
+                        sflag++;
+                        cflag++;
+                        break;
+                case __E:
+                        exflag++;
+                        break;
                 }
                 else {
 passa:
@@ -46,27 +53,36 @@ passa:
                         assource = clist[i];
                         goto assemble;
                 }
-                av = build_argv(3, "c0", clist[i], 0);
-                if (callsys("c0", av)) {
+                ARRAY_ASSIGN(char *, av, "./c0", clist[i], 0);
+                if (callsys("./c0", av)) {
                         cflag++;
                         eflag++;
                         continue;
                 }
-                if (callsys("c1", av)) {
+                ARRAY_ASSIGN(char *, av, "./c1", clist[i], 0);
+                if (callsys("./c1", av)) {
                         cflag++;
                         eflag++;
                         continue;
                 }
                 if (oflag) {
-                        av = build_argv(3, "c0", clist[i], 0);
-                        if (callsys("c2", av)) {
+                        ARRAY_ASSIGN(char *, av, "./c2", clist[i], 0);
+                        if (callsys("./c2", av)) {
 
                         }
                 }
                 if (sflag)
                         continue;
 assemble:
-                av = build_argv(5, "as", assource, "-o", setsuf(clist[i], 'o'), 0);
+                ASSERT(sflag, "conflict of options");
+                ARRAY_ASSIGN(char *,
+                        av,
+                        "as",
+                        assource,
+                        "-o",
+                        setsuf(clist[i], 'o'),
+                        0
+                );
                 if (callsys("/usr/bin/as", av)) {
                         cflag++;
                         eflag++;
@@ -74,6 +90,10 @@ assemble:
                 }
         }
 nocom:
+        if (cflag==0) {
+                i = 0;
+
+        }
         return(nerror!=0);
 }
 
@@ -164,29 +184,10 @@ callsys(char *f, char **v)
         return(status);
 }
 
-char **
-build_argv(int count, ...)
-{
-    va_list args;
-    int i;
-    char **argv = malloc((count+1) * sizeof(char*));
-    char *temp;
-
-    va_start(args, count);
-    for (i=0; i<count; i++) {
-        temp = va_arg(args, char*);
-        argv[i] = malloc(sizeof(temp));
-        argv[i] = temp;
-    }
-    argv[i] = NULL;
-    va_end(args);
-    return(argv);
-}
-
 char    *outfile;
 char    *clist[MAXFIL];
 char    *filename       = NULL;
-char    **av;
+char    *av[50];
 int     exflag          = 0;
 int     cflag           = 0;
 int     eflag           = 0;
